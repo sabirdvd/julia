@@ -901,11 +901,7 @@ if DoFullTest
     # is already running in parallel under the default topology.
     script = joinpath(dirname(@__FILE__), "topology.jl")
     cmd = `$(Base.julia_cmd()) $script`
-
-    (strm, proc) = open(pipeline(cmd, stderr=STDERR))
-    wait(proc)
-    if !success(proc) && ccall(:jl_running_on_valgrind,Cint,()) == 0
-        println(readstring(strm))
+    if !success(pipeline(cmd, stdout=STDOUT)) && ccall(:jl_running_on_valgrind,Cint,()) == 0
         error("Topology tests failed : $cmd")
     end
 
@@ -1310,11 +1306,11 @@ function Base.launch(manager::ErrorSimulator, params::Dict, launched::Array, c::
     else
         error("Unknown mode")
     end
-    io, pobj = open(pipeline(detach(setenv(cmd, dir=dir)); stderr=STDERR), "r")
+    io = open(detach(setenv(cmd, dir=dir)))
 
     wconfig = WorkerConfig()
-    wconfig.process = pobj
-    wconfig.io = io
+    wconfig.process = io
+    wconfig.io = io.out
     push!(launched, wconfig)
     notify(c)
 end
