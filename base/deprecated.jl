@@ -1310,6 +1310,11 @@ end
 # PR #16984
 @deprecate MersenneTwister() MersenneTwister(0)
 
+# PR #21359
+@deprecate srand(r::MersenneTwister, filename::AbstractString, n::Integer=4) srand(r, read!(filename, Array{UInt32}(Int(n))))
+@deprecate srand(filename::AbstractString, n::Integer=4) srand(read!(filename, Array{UInt32}(Int(n))))
+@deprecate MersenneTwister(filename::AbstractString)  srand(MersenneTwister(0), read!(filename, Array{UInt32}(Int(4))))
+
 # #19635
 for fname in (:ones, :zeros)
     @eval @deprecate ($fname)(T::Type, arr) ($fname)(T, size(arr))
