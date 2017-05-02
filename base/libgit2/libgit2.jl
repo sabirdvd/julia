@@ -215,6 +215,16 @@ end
 
 Set the `url` for `remote` for the git repository `repo`.
 The default name of the remote is `"origin"`.
+
+# Examples
+
+```julia
+julia> repo = LibGit2.init(joinpath("test_directory", "Example"))
+
+julia> LibGit2.set_remote_url(repo, "https://github.com/JuliaLang/Example.jl", remote="upstream")
+
+julia> LibGit2.set_remote_url(joinpath("test_directory", "Example"), "https://github.com/JuliaLang/Example2.jl", remote="upstream2")
+```
 """
 function set_remote_url(repo::GitRepo, url::AbstractString; remote::AbstractString="origin")
     with(GitConfig, repo) do cfg
